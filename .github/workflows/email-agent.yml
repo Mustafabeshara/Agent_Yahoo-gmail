@@ -1,0 +1,33 @@
+name: Email Agent
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 15 * * *'  # Runs every day at 15:00 UTC
+
+jobs:
+  run-agent:
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      YAHOO_EMAIL: ${{ secrets.YAHOO_EMAIL }}
+      YAHOO_PASSWORD: ${{ secrets.YAHOO_PASSWORD }}
+      GMAIL_EMAIL: ${{ secrets.GMAIL_EMAIL }}
+      GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run email agent
+        run: |
+          python email_agent/main.py
